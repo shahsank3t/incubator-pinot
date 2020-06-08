@@ -193,7 +193,7 @@ public abstract class BaseBrokerRequestHandler implements BrokerRequestHandler {
       return new BrokerResponseNative(QueryException.getException(QueryException.PQL_PARSING_ERROR, e));
     }
     if (isLiteralOnlyQuery(brokerRequest)) {
-      LOGGER.info("Request {} contains only Literal, skipping server query: {}", requestId, query);
+      LOGGER.debug("Request {} contains only Literal, skipping server query: {}", requestId, query);
       try {
         BrokerResponse brokerResponse =
             processLiteralOnlyBrokerRequest(brokerRequest, compilationStartTimeNs, requestStatistics);
@@ -485,7 +485,6 @@ public abstract class BaseBrokerRequestHandler implements BrokerRequestHandler {
   private BrokerResponse processLiteralOnlyBrokerRequest(BrokerRequest brokerRequest, long compilationStartTimeNs,
       RequestStatistics requestStatistics)
       throws IllegalStateException {
-    System.out.println("brokerRequest = " + brokerRequest.toString());
     BrokerResponseNative brokerResponse = new BrokerResponseNative();
     List<String> columnNames = new ArrayList<>();
     List<DataSchema.ColumnDataType> columnTypes = new ArrayList<>();
@@ -537,6 +536,10 @@ public abstract class BaseBrokerRequestHandler implements BrokerRequestHandler {
         columnTypes.add(DataSchema.ColumnDataType.INT);
         row.add(literal.getIntValue());
         break;
+      case BYTE_VALUE:
+        columnTypes.add(DataSchema.ColumnDataType.INT);
+        row.add((int)literal.getByteValue());
+        break;
       case LONG_VALUE:
         columnTypes.add(DataSchema.ColumnDataType.LONG);
         row.add(literal.getLongValue());
@@ -557,10 +560,6 @@ public abstract class BaseBrokerRequestHandler implements BrokerRequestHandler {
       case BINARY_VALUE:
         columnTypes.add(DataSchema.ColumnDataType.BYTES);
         row.add(BytesUtils.toHexString(literal.getBinaryValue()));
-        break;
-      case BYTE_VALUE:
-        columnTypes.add(DataSchema.ColumnDataType.BYTES);
-        row.add(BytesUtils.toHexString(new byte[]{literal.getByteValue()}));
         break;
     }
   }
