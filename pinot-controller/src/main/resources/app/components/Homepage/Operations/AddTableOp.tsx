@@ -25,6 +25,13 @@ import AddTableComponent from './AddTableComponent';
 import CustomCodemirror from '../../CustomCodemirror';
 import PinotMethodUtils from '../../../utils/PinotMethodUtils';
 import { NotificationContext } from '../../Notification/NotificationContext';
+import AddTenantComponent from './AddTenantComponent';
+import AddIngestionComponent from './AddIngestionComponent';
+import AddIndexingComponent from './AddIndexingComponent';
+import AddPartionComponent from './AddPartionComponent';
+import AddStorageComponent from './AddStorageComponent';
+import AddQueryComponent from './AddQueryComponent';
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -130,6 +137,8 @@ const defaultSchemaObj = {
 
 let timerId = null;
 
+const tableNamekey = ["dimensionFieldSpecs","metricFieldSpecs","dateTimeFieldSpecs"];
+
 export default function AddTableOp({
   hideModal,
   fetchData
@@ -138,6 +147,7 @@ export default function AddTableOp({
   const [tableObj, setTableObj] = useState(JSON.parse(JSON.stringify(defaultTableObj)));
   const [schemaObj, setSchemaObj] = useState(JSON.parse(JSON.stringify(defaultSchemaObj)));
   const [tableName, setTableName] = useState('');
+  const [columnName, setColumnName] = useState([]);
   const {dispatch} = React.useContext(NotificationContext);
 
   useEffect(()=>{
@@ -191,6 +201,18 @@ export default function AddTableOp({
     }
   };
 
+  useEffect(()=>{
+    let columnName = [];
+    if(!_.isEmpty(schemaObj)){
+      tableNamekey.map((o)=>{
+        schemaObj[o] && schemaObj[o].map((obj)=>{
+          columnName.push(obj.name);
+        })
+      })
+    }
+    setColumnName(columnName);
+  },[schemaObj])
+
   return (
     <Dialog
       open={true}
@@ -212,6 +234,75 @@ export default function AddTableOp({
                 tableObj={tableObj}
                 setTableObj={setTableObj}
                 dateTimeFieldSpecs={schemaObj.dateTimeFieldSpecs}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Tenants"
+              showSearchBox={false}
+            >
+              <AddTenantComponent
+                tableObj={{...tableObj}}
+                setTableObj={setTableObj}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Ingestion"
+              showSearchBox={false}
+            >
+              <AddIngestionComponent
+                tableObj={{...tableObj}}
+                setTableObj={setTableObj}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Indexing & encoding"
+              showSearchBox={false}
+            >
+              <AddIndexingComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Partitioning & Routing"
+              showSearchBox={false}
+            >
+              <AddPartionComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Storage & Data retention"
+              showSearchBox={false}
+            >
+              <AddStorageComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Query"
+              showSearchBox={false}
+            >
+              <AddQueryComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
               />
             </SimpleAccordion>
           </Grid>

@@ -26,6 +26,13 @@ import AddTableComponent from './AddTableComponent';
 import CustomCodemirror from '../../CustomCodemirror';
 import PinotMethodUtils from '../../../utils/PinotMethodUtils';
 import { NotificationContext } from '../../Notification/NotificationContext';
+import AddTenantComponent from './AddTenantComponent';
+import AddIngestionComponent from './AddIngestionComponent';
+import AddPartionComponent from './AddPartionComponent';
+import AddQueryComponent from './AddQueryComponent';
+import AddStorageComponent from './AddStorageComponent';
+import AddIndexingComponent from './AddIndexingComponent';
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -122,6 +129,8 @@ const defaultTableObj = {
   "tierConfigs": null
 };
 
+const tableNamekey = ["dimensionFieldSpecs","metricFieldSpecs","dateTimeFieldSpecs"];
+
 export default function AddTableSchemaOp({
   hideModal,
   fetchData
@@ -129,6 +138,7 @@ export default function AddTableSchemaOp({
   const classes = useStyles();
   const [schemaObj, setSchemaObj] = useState({schemaName:'', dateTimeFieldSpecs: []});
   const [schemaName, setSchemaName] = useState("");
+  const [columnName, setColumnName] = useState([]);
   const [tableObj, setTableObj] = useState(JSON.parse(JSON.stringify(defaultTableObj)));
   const {dispatch} = React.useContext(NotificationContext);
 
@@ -138,6 +148,18 @@ export default function AddTableSchemaOp({
     setSchemaObj(newSchemaObj);
     setTimeout(()=>{setSchemaName(tableObj.tableName);},0);
   }, [tableObj])
+
+  useEffect(()=>{
+    let columnName = [];
+    if(!_.isEmpty(schemaObj)){
+      tableNamekey.map((o)=>{
+        schemaObj[o] && schemaObj[o].map((obj)=>{
+          columnName.push(obj.name);
+        })
+      })
+    }
+    setColumnName(columnName);
+  },[schemaObj])
 
   const validateSchema = async () => {
     const validSchema = await PinotMethodUtils.validateSchemaAction(schemaObj);
@@ -198,6 +220,18 @@ export default function AddTableSchemaOp({
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <SimpleAccordion
+              headerTitle="Add Table"
+              showSearchBox={false}
+            >
+              <AddTableComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+                dateTimeFieldSpecs={schemaObj.dateTimeFieldSpecs}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
               headerTitle="Add Schema"
               showSearchBox={false}
             >
@@ -209,13 +243,70 @@ export default function AddTableSchemaOp({
           </Grid>
           <Grid item xs={12}>
             <SimpleAccordion
-              headerTitle="Add Table"
+              headerTitle="Tenants"
               showSearchBox={false}
             >
-              <AddTableComponent
+              <AddTenantComponent
+                tableObj={{...tableObj}}
+                setTableObj={setTableObj}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Ingestion"
+              showSearchBox={false}
+            >
+              <AddIngestionComponent
+                tableObj={{...tableObj}}
+                setTableObj={setTableObj}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Indexing & encoding"
+              showSearchBox={false}
+            >
+              <AddIndexingComponent
                 tableObj={tableObj}
                 setTableObj={setTableObj}
-                dateTimeFieldSpecs={schemaObj.dateTimeFieldSpecs}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Partitioning & Routing"
+              showSearchBox={false}
+            >
+              <AddPartionComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+                columnName={columnName}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Storage & Data retention"
+              showSearchBox={false}
+            >
+              <AddStorageComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
+              />
+            </SimpleAccordion>
+          </Grid>
+          <Grid item xs={12}>
+            <SimpleAccordion
+              headerTitle="Query"
+              showSearchBox={false}
+            >
+              <AddQueryComponent
+                tableObj={tableObj}
+                setTableObj={setTableObj}
               />
             </SimpleAccordion>
           </Grid>

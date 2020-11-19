@@ -229,10 +229,7 @@ export default function SchemaComponent({
                     <MenuItem value="false">False</MenuItem>
                   </Select>
                 </FormControl>
-              }
-
-              <br/>
-              
+      }
               <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="maxLength">Max Value Length</InputLabel>
                 <Input
@@ -253,10 +250,10 @@ export default function SchemaComponent({
                   )}
                 />
               </FormControl>
-            </div>
+            <br/>
 
             {columnObj.type === 'datetime' &&
-              <div className={classes.dateTimeDiv}>
+              <div>
                 <FormControl className={classes.formControl}>
                   <InputLabel htmlFor="timeUnit">Time Unit {requiredAstrix}</InputLabel>
                   <Select
@@ -296,7 +293,6 @@ export default function SchemaComponent({
                     />
                   </FormControl>
                 }
-                <br/>
                 <FormControl className={classes.formControl}>
                   <InputLabel htmlFor="granularityInterval">Granularity Interval {requiredAstrix}</InputLabel>
                   <Input
@@ -323,6 +319,7 @@ export default function SchemaComponent({
                 </FormControl>
               </div>
             }
+            </div>
             <div className={classes.iconDiv}>
               <FormControl>
                 <IconButton
