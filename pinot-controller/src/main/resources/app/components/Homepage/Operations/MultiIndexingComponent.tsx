@@ -206,7 +206,10 @@ export default function MultiIndexingComponent({
     }
 
     useEffect(() => {
-        setStreamConfigObj(convertInputToData(streamConfigsObj));
+        let value = convertInputToData(streamConfigsObj);
+        if(value.length > streamConfigObj.length){
+            setStreamConfigObj(value);
+        }
     }, [streamConfigsObj]);
 
   return (
@@ -218,7 +221,7 @@ export default function MultiIndexingComponent({
                             <Grid item xs={6}>
                                 <div className="box-border">
                                 <Grid container spacing={2}>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={3}>
                                         <FormControl className={classes.formControl}>
                                             <InputLabel htmlFor={o.columnName}>Column Name</InputLabel>
                                             <Select
@@ -282,7 +285,7 @@ export default function MultiIndexingComponent({
                                             </Select>
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={1}>
                                         <FormControl>
                                             <IconButton aria-label="delete" className={classes.deleteIcon} onClick={()=>{
                                                 deleteClick(i)}}>

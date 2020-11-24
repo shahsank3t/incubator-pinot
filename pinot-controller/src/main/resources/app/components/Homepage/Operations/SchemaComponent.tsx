@@ -22,6 +22,8 @@ import { createStyles, FormControl, Grid, IconButton, Input, InputLabel, makeSty
 import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Autocomplete } from '@material-ui/lab';
+import { debug } from 'webpack';
+import _ from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -50,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     selectFormControl: {
       margin: theme.spacing(1),
-      width: 170
+      width: 220
     },
     MVFFormControl: {
       margin: theme.spacing(1),
@@ -72,12 +74,14 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   schemaName: string,
-  setSchemaObj: Function
+  setSchemaObj: Function,
+  schemaObj? : any
 };
 
 export default function SchemaComponent({
   schemaName = '',
-  setSchemaObj
+  setSchemaObj,
+  schemaObj
 }: Props) {
   const classes = useStyles();
   const defaultColumnObj = {
@@ -165,6 +169,15 @@ export default function SchemaComponent({
     setColumnList(newColumnList);
   }
 
+  // useEffect(()=>{
+  //   debugger;
+  //   columnList.map((col,i)=>{
+  //     if(!_.isEqual(columnList[i], schemaObj[i])){
+  //       setColumnList([...schemaObj]);
+  //     }
+  //   })
+  // },[schemaObj])
+
   const requiredAstrix = <span className={classes.redColor}>*</span>;
   return (
     <Grid container className={classes.rootContainer}>
@@ -206,7 +219,7 @@ export default function SchemaComponent({
                   {defaultDataTypeOptions[columnObj.type || 'dimension'].map((dataType, i)=>(<MenuItem key={i} value={dataType}>{dataType}</MenuItem>))}
                 </Select>
               </FormControl>
-
+{/*
               <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="defaultNullValue">Default Null Value</InputLabel>
                 <Input
@@ -214,9 +227,8 @@ export default function SchemaComponent({
                   value={columnObj.defaultNullValue}
                   onChange={(e)=> changeHandler(index, 'defaultNullValue', e.target.value)}
                 />
-              </FormControl>
+              </FormControl> */}
 
-              {columnObj.type === 'dimension' &&
                 <FormControl className={classes.MVFFormControl}>
                   <InputLabel htmlFor="multiValue">Multi Value Field</InputLabel>
                   <Select
@@ -229,7 +241,8 @@ export default function SchemaComponent({
                     <MenuItem value="false">False</MenuItem>
                   </Select>
                 </FormControl>
-      }
+                {columnObj.type !== 'datetime' &&
+                <>
               <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="maxLength">Max Value Length</InputLabel>
                 <Input
@@ -250,6 +263,8 @@ export default function SchemaComponent({
                   )}
                 />
               </FormControl>
+              </>
+              }
             <br/>
 
             {columnObj.type === 'datetime' &&

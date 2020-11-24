@@ -62,7 +62,8 @@ import {
   validateTable,
   saveSchema,
   saveTable,
-  getSchema
+  getSchema,
+  getSchemaList
 } from '../requests';
 import Utils from './Utils';
 
@@ -306,6 +307,33 @@ const getTenantTableData = (tenantName) => {
     return getAllTableDetails(tableArr);
   });
 };
+
+const getSchemaObject = async (schemaName) =>{
+  let schemaObj:Array<any> = [];
+  await getSchema(schemaName).then(async (obj)=>{
+    schemaObj.push(obj.data.schemaName);
+    schemaObj.push(obj.data.dimensionFieldSpecs ? obj.data.dimensionFieldSpecs.length : 0);
+    schemaObj.push(obj.data.dateTimeFieldSpecs ? obj.data.dateTimeFieldSpecs.length : 0);
+    schemaObj.push(obj.data.metricFieldSpecs ? obj.data.metricFieldSpecs.length : 0);
+    schemaObj.push(schemaObj[1] + schemaObj[2] + schemaObj[3]);
+   });
+  return schemaObj;
+}
+
+const getAllSchemaDetails = () => {
+  const columnHeaders = ["Schema Name","Num columns","Num Dimensions","Num metrics","Num date time columns"]
+  let schemaDetails:Array<any> = [];
+  getSchemaList().then(({data}) => {
+    data.map(async (o)=>{
+      let schemaObj = await getSchemaObject(o);
+      schemaDetails.push(schemaObj);
+    });
+  });
+  return {
+    columns: columnHeaders,
+    records: schemaDetails
+  };
+}
 
 const getAllTableDetails = (tablesList) => {
   const columnHeaders = [
@@ -736,5 +764,6 @@ export default {
   validateTableAction,
   saveSchemaAction,
   saveTableAction,
-  getSchemaData
+  getSchemaData,
+  getAllSchemaDetails
 };

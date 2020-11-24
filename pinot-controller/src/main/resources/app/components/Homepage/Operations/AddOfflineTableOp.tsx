@@ -32,6 +32,7 @@ import AddPartionComponent from './AddPartionComponent';
 import AddStorageComponent from './AddStorageComponent';
 import AddQueryComponent from './AddQueryComponent';
 import _ from 'lodash';
+import AddOfflineTenantComponent from './AddOfflineTenantComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +49,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   hideModal: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-  fetchData: Function
+  fetchData: Function,
+  tableType: String
 };
 
 const defaultTableObj = {
@@ -139,9 +141,10 @@ let timerId = null;
 
 const tableNamekey = ["dimensionFieldSpecs","metricFieldSpecs","dateTimeFieldSpecs"];
 
-export default function AddTableOp({
+export default function AddOfflineTableOp({
   hideModal,
-  fetchData
+  fetchData,
+  tableType
 }: Props) {
   const classes = useStyles();
   const [tableObj, setTableObj] = useState(JSON.parse(JSON.stringify(defaultTableObj)));
@@ -160,6 +163,10 @@ export default function AddTableOp({
     }
   }, [tableObj]);
 
+  useEffect(()=>{
+    setTableObj({...tableObj,"tableType":tableType})
+  },[])
+
   const updateSchemaObj = async (tableName) => {
     //table name is same as schema name
     const schemaObj = await PinotMethodUtils.getSchemaData(tableName);
@@ -174,7 +181,7 @@ export default function AddTableOp({
       setSchemaObj({...defaultSchemaObj, ...schemaObj});
     }
   }
-  
+
   const validateTableConfig = async () => {
     const validTable = await PinotMethodUtils.validateTableAction(tableObj);
     if(validTable.error || typeof validTable === 'string'){
@@ -218,7 +225,7 @@ export default function AddTableOp({
       open={true}
       handleClose={hideModal}
       handleSave={handleSave}
-      title="Add Table"
+      title={`Add ${tableType} Table`}
       size="xl"
       disableBackdropClick={true}
       disableEscapeKeyDown={true}
@@ -234,6 +241,7 @@ export default function AddTableOp({
                 tableObj={tableObj}
                 setTableObj={setTableObj}
                 dateTimeFieldSpecs={schemaObj.dateTimeFieldSpecs}
+                disable={tableType !== ""}
               />
             </SimpleAccordion>
           </Grid>
@@ -242,7 +250,7 @@ export default function AddTableOp({
               headerTitle="Tenants"
               showSearchBox={false}
             >
-              <AddTenantComponent
+              <AddOfflineTenantComponent
                 tableObj={{...tableObj}}
                 setTableObj={setTableObj}
               />
