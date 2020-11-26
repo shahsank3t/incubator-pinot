@@ -120,12 +120,20 @@ const TablesListingPage = () => {
         showSearchBox={true}
         inAccordionFormat={true}
       />
+      <CustomizedTables
+          title="Schemas"
+          data={schemaDetails}
+          isPagination
+          showSearchBox={true}
+          inAccordionFormat={true}
+          addLinks
+          baseURL="/tenants/schema/"
+      />
       {
         showSchemaModal &&
         <AddSchemaOp
           hideModal={()=>{setShowSchemaModal(false);}}
           fetchData={fetchData}
-          schemaDetails={schemaDetails}
         />
       }
       {

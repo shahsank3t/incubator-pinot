@@ -81,7 +81,7 @@ type Props = {
 export default function SchemaComponent({
   schemaName = '',
   setSchemaObj,
-  schemaObj
+  schemaObj,
 }: Props) {
   const classes = useStyles();
   const defaultColumnObj = {
@@ -169,18 +169,25 @@ export default function SchemaComponent({
     setColumnList(newColumnList);
   }
 
-  // useEffect(()=>{
-  //   debugger;
-  //   columnList.map((col,i)=>{
-  //     if(!_.isEqual(columnList[i], schemaObj[i])){
-  //       setColumnList([...schemaObj]);
-  //     }
-  //   })
-  // },[schemaObj])
+  const schemaNameChange = (schemaName) =>{
+    let newSchemaObj = {...schemaObj};
+    newSchemaObj.schemaName = schemaName;
+    setSchemaObj(newSchemaObj);
+  }
 
   const requiredAstrix = <span className={classes.redColor}>*</span>;
   return (
     <Grid container className={classes.rootContainer}>
+        <Grid item xs={12} key={"schemaName"}>
+              <FormControl className={classes.formControl}>
+                <InputLabel htmlFor="schemaName">Schema Name {requiredAstrix}</InputLabel>
+                <Input
+                  id="schemaName"
+                  value={schemaName}
+                  onChange={(e)=> schemaNameChange(e.target.value)}
+                />
+              </FormControl>
+        </Grid>
       {columnList.map((columnObj, index)=>{
         return(
           <Grid item xs={12} key={index} className={classes.gridItem}>

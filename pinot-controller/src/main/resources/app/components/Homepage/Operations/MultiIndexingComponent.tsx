@@ -50,13 +50,21 @@ const useStyles = makeStyles((theme: Theme) =>
 type Props = {
     changeHandler: any,
     streamConfigsObj: Object,
-    columnName:Array<string>
+    columnName:Array<string>,
+    textDataObj: Array<TextObj>
 };
+
+type TextObj = {
+    name:string,
+    encodingType:string,
+    indexType:string
+}
 
 export default function MultiIndexingComponent({
     changeHandler,
     streamConfigsObj,
-    columnName
+    columnName,
+    textDataObj
 }: Props) {
     const classes = useStyles();
     const ITEM_HEIGHT = 48;
@@ -69,6 +77,8 @@ export default function MultiIndexingComponent({
           },
         },
       };
+
+      const [jsonUpdated,setJsonUpdated] = useState(false);
 
     const updateFieldForColumnName = (tempStreamConfigObj,values,Field,majorField) =>{
         values.map((v)=>{
@@ -96,40 +106,45 @@ export default function MultiIndexingComponent({
         return tempStreamConfigObj;
     }
 
-    const convertInputToData = (input) =>{
-        let tempStreamConfigObj = [];
-        Object.keys(input).map((o)=>{
-            switch(o){
-                case "invertedIndexColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Inverted","Indexing");
-                break;
-                case "rangeIndexColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Range","Indexing");
-                break;
-                case "sortedColumn":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Sorted","Indexing");
-                break;
-                case "bloomFilterColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"bloomFilter","Indexing");
-                break;
-                case "noDictionaryColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"None","Encoding");
-                break;
-                case "DictionaryColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Dictionary","Encoding");
-                break;
-                case "onHeapDictionaryColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"heapDictionary","Encoding");
-                break;
-                case "varLengthDictionaryColumns":
-                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"varDictionary","Encoding");
-                break;
+    const convertInputToData = (input,isJsonUpdated) =>{
+            let tempStreamConfigObj = [];
+            Object.keys(input).map((o)=>{
+                switch(o){
+                    case "invertedIndexColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Inverted","Indexing");
+                    break;
+                    case "rangeIndexColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Range","Indexing");
+                    break;
+                    case "sortedColumn":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Sorted","Indexing");
+                    break;
+                    case "bloomFilterColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"bloomFilter","Indexing");
+                    break;
+                    case "noDictionaryColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"None","Encoding");
+                    break;
+                    case "DictionaryColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"Dictionary","Encoding");
+                    break;
+                    case "onHeapDictionaryColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"heapDictionary","Encoding");
+                    break;
+                    case "varLengthDictionaryColumns":
+                        tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,input[o],"varDictionary","Encoding");
+                    break;
+                }
+            })
+            if(textDataObj && textDataObj.length){
+                textDataObj.map((o)=>{
+                    tempStreamConfigObj = updateFieldForColumnName(tempStreamConfigObj,[o.name],"Text","Indexing");
+                })
             }
-        })
-        return tempStreamConfigObj;
+            return tempStreamConfigObj;
     }
 
-    const [streamConfigObj, setStreamConfigObj] = useState(convertInputToData(streamConfigsObj));
+    const [streamConfigObj, setStreamConfigObj] = useState(convertInputToData(streamConfigsObj,false));
 
     const addButtonClick = ()=>{
         let data = {
@@ -153,6 +168,8 @@ export default function MultiIndexingComponent({
             varLengthDictionaryColumns :  [],
             bloomFilterColumns : []
         };
+        let fieldConfigList= [];
+
         input.map((i)=>{
             i.Indexing.map((o)=>{
                 switch(o){
@@ -167,6 +184,9 @@ export default function MultiIndexingComponent({
                     break;
                     case "bloomFilter":
                         outputData.bloomFilterColumns.push(i.columnName);
+                    break;
+                    case "Text":
+                        fieldConfigList.push({"name":i.columnName, "encodingType":"RAW", "indexType":"TEXT"})
                     break;
                 }
             })
@@ -184,8 +204,11 @@ export default function MultiIndexingComponent({
                         outputData.varLengthDictionaryColumns.push(i.columnName);
                     break;
                 }
-        })
-        return outputData;
+        });
+        return {
+            tableIndexConfig:outputData,
+            fieldConfigList
+        };
     }
 
     const keyChange = (input,index, value) =>{
@@ -206,15 +229,21 @@ export default function MultiIndexingComponent({
     }
 
     useEffect(() => {
-        let value = convertInputToData(streamConfigsObj);
-        if(value.length > streamConfigObj.length){
-            setStreamConfigObj(value);
+        debugger;
+        if(jsonUpdated){
+            setJsonUpdated(false);
+        }
+        else{
+            let value = convertInputToData(streamConfigsObj,true);
+            if(value.length >= streamConfigObj.length){
+                setStreamConfigObj(value);
+            }
+            setJsonUpdated(true);
         }
     }, [streamConfigsObj]);
 
   return (
     <Grid container spacing={2}>
-        <h3 className="accordion-subtitle">Index Config</h3>
                 {
                     streamConfigObj && streamConfigObj.map((o,i)=>{
                         return(

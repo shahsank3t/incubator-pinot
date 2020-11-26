@@ -40,7 +40,7 @@ type Props = {
   columnName: Array<string>
 };
 
-export default function AddPartionComponent({
+export default function AddRealTimePartionComponent({
   tableObj,
   setTableObj,
   columnName
@@ -200,34 +200,6 @@ export default function AddPartionComponent({
                 <MenuItem value={0}>False</MenuItem>
             </Select>
         </FormControl>
-
-        {
-            tableDataObj.routing.instanceSelectorType ?
-                <FormControl className={classes.formControl} >
-                    <InputLabel htmlFor="numReplicaGroups">Number of replica groups</InputLabel>
-                    <Input
-                        id="numReplicaGroups"
-                        value={tableDataObj.instanceAssignmentConfigMap ? Number(tableDataObj.instanceAssignmentConfigMap["OFFLINE"].replicaGroupPartitionConfig.numReplicaGroups) : null}
-                        onChange={(e)=> changeHandler('numReplicaGroups', e.target.value)}
-                        type="number"
-                    />
-                </FormControl>
-            : null
-        }
-
-        {
-            tableDataObj.routing.instanceSelectorType ?
-                <FormControl className={classes.formControl} >
-                    <InputLabel htmlFor="numInstancesPerReplicaGroup">Number of instances per replica group​</InputLabel>
-                    <Input
-                        id="numInstancesPerReplicaGroup"
-                        value={tableDataObj.instanceAssignmentConfigMap ? Number(tableDataObj.instanceAssignmentConfigMap["OFFLINE"].replicaGroupPartitionConfig.numInstancesPerReplicaGroup) : null}
-                        onChange={(e)=> changeHandler('numInstancesPerReplicaGroup', e.target.value)}
-                        type="number"
-                    />
-                </FormControl>
-            : null
-        }
       </Grid>
     </Grid>
   );

@@ -111,10 +111,10 @@ export default function AddDeleteComponent({
                 {
                     keys.map((o,i)=>{
                         return(
-                            <Grid item xs={4}>
+                            <Grid item xs={6}>
                                 <div className="box-border">
                                 <Grid container spacing={2}>
-                                    <Grid item xs={5}>
+                                    <Grid item xs={6}>
                                         <FormControl className={classes.formControl}>
                                             <InputLabel htmlFor={o}>Key</InputLabel>
                                             <Input
@@ -138,7 +138,7 @@ export default function AddDeleteComponent({
                                             />
                                         </FormControl>
                                     </Grid>
-                                    <Grid item xs={2}>
+                                    <Grid item xs={1}>
                                         <FormControl>
                                             <IconButton aria-label="delete" key={"delete"+i} className={classes.deleteIcon} onClick={()=>{
                                                 deleteClick(o)}}>

@@ -32,6 +32,8 @@ import AddPartionComponent from './AddPartionComponent';
 import AddStorageComponent from './AddStorageComponent';
 import AddQueryComponent from './AddQueryComponent';
 import _ from 'lodash';
+import AddRealTimeIngestionComponent from './AddRealTimeIngestionComponent';
+import AddRealTimePartionComponent from './AddRealTimePartionComponent';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -260,7 +262,7 @@ export default function AddRealtimeTableOp({
               headerTitle="Ingestion"
               showSearchBox={false}
             >
-              <AddIngestionComponent
+              <AddRealTimeIngestionComponent
                 tableObj={{...tableObj}}
                 setTableObj={setTableObj}
                 columnName={columnName}
@@ -284,7 +286,7 @@ export default function AddRealtimeTableOp({
               headerTitle="Partitioning & Routing"
               showSearchBox={false}
             >
-              <AddPartionComponent
+              <AddRealTimePartionComponent
                 tableObj={tableObj}
                 setTableObj={setTableObj}
                 columnName={columnName}

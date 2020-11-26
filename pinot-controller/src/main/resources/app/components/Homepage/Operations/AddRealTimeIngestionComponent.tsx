@@ -42,7 +42,7 @@ type Props = {
   columnName: Array<string>
 };
 
-export default function AddIngestionComponent({
+export default function AddRealTimeIngestionComponent({
   tableObj,
   setTableObj,
   columnName
@@ -145,8 +145,6 @@ export default function AddIngestionComponent({
                         </Select>
                     </FormControl> : null
             }
-            </Grid>
-            <Grid item xs={12}>
             <FormControl className={classes.formControl}>
                 <InputLabel htmlFor="filterFunction">Filter function</InputLabel>
                 <Input
@@ -155,6 +153,11 @@ export default function AddIngestionComponent({
                     onChange={(e)=> changeHandler('filterFunction', e.target.value)}
                 />
             </FormControl>
+            <MultipleSelectComponent
+                key = {"transformConfigs"}
+                streamConfigsObj = {tableDataObj.ingestionConfig.filterConfig && tableDataObj.ingestionConfig.filterConfig.transformConfigs || []}
+                changeHandler = {changeHandler}
+                columnName= {columnName}/>
             {
                 tableDataObj.streamConfigs ?
                 <AddDeleteComponent
@@ -163,11 +166,6 @@ export default function AddIngestionComponent({
                     changeHandler = {changeHandler}/>
                 : null
             }
-            <MultipleSelectComponent
-                key = {"transformConfigs"}
-                streamConfigsObj = {tableDataObj.ingestionConfig.filterConfig && tableDataObj.ingestionConfig.filterConfig.transformConfigs || []}
-                changeHandler = {changeHandler}
-                columnName= {columnName}/>
           </Grid>
     </Grid>
   );

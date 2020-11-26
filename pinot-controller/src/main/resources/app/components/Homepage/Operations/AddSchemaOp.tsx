@@ -44,20 +44,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 type Props = {
   hideModal: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-  fetchData: Function,
-  schemaDetails: any
+  fetchData: Function
 };
-
-const tableNamekey = ["dimensionFieldSpecs","metricFieldSpecs","dateTimeFieldSpecs"];
 
 export default function AddSchemaOp({
   hideModal,
-  fetchData,
-  schemaDetails
+  fetchData
 }: Props) {
   const classes = useStyles();
   const [schemaObj, setSchemaObj] = useState({schemaName:'', dateTimeFieldSpecs: []});
-  const [schemaName, setSchemaName] = useState("");
   const {dispatch} = React.useContext(NotificationContext);
 
   const validateSchema = async () => {
@@ -88,15 +83,6 @@ export default function AddSchemaOp({
     }
   };
 
-  const updateSchemaObj = async (tableName) => {
-    //table name is same as schema name
-    const schemaObj = await PinotMethodUtils.getSchemaData(tableName);
-    setSchemaObj({...schemaObj});
-  }
-
-  useEffect(()=>{
-    setSchemaName(schemaObj.schemaName);
-  },[schemaObj])
   return (
     <Dialog
       open={true}
@@ -110,34 +96,13 @@ export default function AddSchemaOp({
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-          <CustomizedTables
-            title="Schemas"
-            data={schemaDetails}
-            isPagination
-            baseURL="/schemas"
-            showSearchBox={true}
-            inAccordionFormat={true}
-            isCellClickable
-            cellClickCallback={(cell)=>{
-              updateSchemaObj(cell)
-            }}
-          />
-          </Grid>
-          <Grid item xs={12}>
-              <SchemaNameComponent
-                schemaName={schemaName}
-                schemaObj={schemaObj}
-                setSchemaObj={(o)=>{setSchemaObj(o);}}
-              />
-          </Grid>
-          <Grid item xs={12}>
             <SimpleAccordion
               headerTitle="Add Schema"
               showSearchBox={false}
             >
               <SchemaComponent
                 schemaObj={schemaObj}
-                schemaName={schemaName}
+                schemaName={schemaObj.schemaName}
                 setSchemaObj={(o)=>{setSchemaObj(o);}}
               />
             </SimpleAccordion>
@@ -145,13 +110,13 @@ export default function AddSchemaOp({
           <Grid item xs={6}>
             <div className={classes.sqlDiv}>
               <SimpleAccordion
-                headerTitle="Schema Config"
+                headerTitle="Schema Config (Read Only)"
                 showSearchBox={false}
               >
                 <CustomCodemirror
                   customClass={classes.queryOutput}
                   data={schemaObj}
-                  isEditable={true}
+                  isEditable={false}
                   returnCodemirrorValue={(newValue)=>{
                     try{
                       const jsonObj = JSON.parse(newValue);

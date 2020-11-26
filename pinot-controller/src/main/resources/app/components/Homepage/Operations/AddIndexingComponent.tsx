@@ -85,7 +85,8 @@ export default function AddIndexingComponent({
         newTableObj.tableIndexConfig.starTreeIndexConfigs[0].maxLeafRecords = value;
       break;
       case 'tableIndexConfig':
-        newTableObj.tableIndexConfig  = {...newTableObj.tableIndexConfig,...value};
+        newTableObj.tableIndexConfig  = {...newTableObj.tableIndexConfig,...value.tableIndexConfig};
+        newTableObj.fieldConfigList = [...value.fieldConfigList];
       break;
     };
     setTableDataObj(newTableObj);
@@ -147,6 +148,7 @@ export default function AddIndexingComponent({
         <MultiIndexingComponent
             key = {"multiIndex"}
             streamConfigsObj = {{...tableDataObj.tableIndexConfig}}
+            textDataObj={tableDataObj.fieldConfigList ? [...tableDataObj.fieldConfigList] : []}
             changeHandler = {changeHandler}
             columnName={columnName}/>
         {/* <MultiMetricComponent

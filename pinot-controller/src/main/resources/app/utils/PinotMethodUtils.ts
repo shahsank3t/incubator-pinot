@@ -310,25 +310,34 @@ const getTenantTableData = (tenantName) => {
 
 const getSchemaObject = async (schemaName) =>{
   let schemaObj:Array<any> = [];
-  await getSchema(schemaName).then(async (obj)=>{
+    let {data} = await getSchema(schemaName);
+    console.log(data);
+      schemaObj.push(data.schemaName);
+      schemaObj.push(data.dimensionFieldSpecs ? data.dimensionFieldSpecs.length : 0);
+      schemaObj.push(data.dateTimeFieldSpecs ? data.dateTimeFieldSpecs.length : 0);
+      schemaObj.push(data.metricFieldSpecs ? data.metricFieldSpecs.length : 0);
+      schemaObj.push(schemaObj[1] + schemaObj[2] + schemaObj[3]);
+      return schemaObj;
+  }
+
+const getAllSchemaDetails = async () => {
+  const columnHeaders = ["Schema Name", "Dimension Columns", "Date-Time Columns", "Metrics Columns", "Total Columns"]
+  let schemaDetails:Array<any> = [];
+  let promiseArr = [];
+  const {data} = await getSchemaList()
+  promiseArr = data.map(async (o)=>{
+    return await getSchema(o);
+  });
+  const results = await Promise.all(promiseArr);
+  schemaDetails = results.map((obj)=>{
+    let schemaObj = [];
     schemaObj.push(obj.data.schemaName);
     schemaObj.push(obj.data.dimensionFieldSpecs ? obj.data.dimensionFieldSpecs.length : 0);
     schemaObj.push(obj.data.dateTimeFieldSpecs ? obj.data.dateTimeFieldSpecs.length : 0);
     schemaObj.push(obj.data.metricFieldSpecs ? obj.data.metricFieldSpecs.length : 0);
     schemaObj.push(schemaObj[1] + schemaObj[2] + schemaObj[3]);
-   });
-  return schemaObj;
-}
-
-const getAllSchemaDetails = () => {
-  const columnHeaders = ["Schema Name","Num columns","Num Dimensions","Num metrics","Num date time columns"]
-  let schemaDetails:Array<any> = [];
-  getSchemaList().then(({data}) => {
-    data.map(async (o)=>{
-      let schemaObj = await getSchemaObject(o);
-      schemaDetails.push(schemaObj);
-    });
-  });
+    return schemaObj;
+  })
   return {
     columns: columnHeaders,
     records: schemaDetails
